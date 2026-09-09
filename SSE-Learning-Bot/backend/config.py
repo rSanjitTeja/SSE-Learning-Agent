@@ -6,22 +6,51 @@ load_dotenv()
 
 
 class Settings:
-    """Application settings loaded from environment."""
+    """Application settings loaded dynamically from environment at runtime."""
     
-    # AI / LLM (Gemini)
-    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
-    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
-    
-    # Deepgram (STT and TTS)
-    deepgram_api_key: str = os.getenv("DEEPGRAM_API_KEY", "")
-    deepgram_stt_model: str = os.getenv("DEEPGRAM_STT_MODEL", "nova-3")
-    deepgram_tts_model: str = os.getenv("DEEPGRAM_TTS_MODEL", "aura-asteria-en")
-    
-    # Fallbacks / Proxies
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_llm_model: str = os.getenv("OPENAI_LLM_MODEL", "gpt-4o-mini")
-    BASE_URL: str = os.getenv("BASE_URL", "https://api.openai.com/v1")
-    
+    @property
+    def gemini_api_key(self) -> str:
+        load_dotenv(override=True)
+        key = os.getenv("GEMINI_API_KEY", "") or os.getenv("GOOGLE_API_KEY", "")
+        return key.strip().strip('"').strip("'")
+
+    @property
+    def gemini_model(self) -> str:
+        load_dotenv(override=True)
+        return os.getenv("GEMINI_MODEL", "gemini-1.5-flash").strip().strip('"').strip("'")
+
+    @property
+    def deepgram_api_key(self) -> str:
+        load_dotenv(override=True)
+        key = os.getenv("DEEPGRAM_API_KEY", "")
+        return key.strip().strip('"').strip("'")
+
+    @property
+    def deepgram_stt_model(self) -> str:
+        load_dotenv(override=True)
+        return os.getenv("DEEPGRAM_STT_MODEL", "nova-3").strip().strip('"').strip("'")
+
+    @property
+    def deepgram_tts_model(self) -> str:
+        load_dotenv(override=True)
+        return os.getenv("DEEPGRAM_TTS_MODEL", "aura-asteria-en").strip().strip('"').strip("'")
+
+    @property
+    def openai_api_key(self) -> str:
+        load_dotenv(override=True)
+        key = os.getenv("OPENAI_API_KEY", "")
+        return key.strip().strip('"').strip("'")
+
+    @property
+    def openai_llm_model(self) -> str:
+        load_dotenv(override=True)
+        return os.getenv("OPENAI_LLM_MODEL", "gpt-4o-mini").strip().strip('"').strip("'")
+
+    @property
+    def BASE_URL(self) -> str:
+        load_dotenv(override=True)
+        return os.getenv("BASE_URL", "https://api.openai.com/v1").strip().strip('"').strip("'")
+
     @property
     def openrouter_api_key(self) -> str:
         load_dotenv(override=True)
@@ -30,7 +59,7 @@ class Settings:
     @property
     def openrouter_model(self) -> str:
         load_dotenv(override=True)
-        return os.getenv("OPENROUTER_MODEL", "nvidia/llama-3.1-nemotron-70b-instruct:free").strip('"').strip("'")
+        return os.getenv("OPENROUTER_MODEL", "openrouter/auto").strip('"').strip("'")
 
     @property
     def openrouter_base_url(self) -> str:
