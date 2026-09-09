@@ -89,10 +89,14 @@ Render will ask you to fill in details for your new Web Service. Configure them 
 | **Language / Runtime** | `Python 3` | Render automatically detects Python |
 | **Branch** | `main` | Select the branch you pushed your code to |
 | **Region** | Select closest to you | e.g. *Oregon (US West)*, *Singapore*, or *Frankfurt* |
-| **Root Directory** | *(Leave Blank)* | Keep blank to use project root |
+| **Root Directory** | `SSE-Learning-Bot` | ⚠️ **Required**: Set this if your code is inside the `SSE-Learning-Bot` subfolder |
 | **Build Command** | `pip install --upgrade pip && pip install -r requirements.txt` | Installs FastAPI, Uvicorn, Deepgram, etc. |
 | **Start Command** | `uvicorn backend.main:app --host 0.0.0.0 --port $PORT` | ⚠️ **Crucial**: Uses dynamic `$PORT` provided by Render |
 | **Instance Type** | **Free** | $0/month free tier |
+
+> 📁 **CRITICAL ROOT DIRECTORY NOTE**:  
+> Because your repository contains the code inside a subfolder named `SSE-Learning-Bot`, you **MUST** set **Root Directory** to `SSE-Learning-Bot` in Render.  
+> This allows Render to locate `requirements.txt` and `backend/main.py`.
 
 > ⚠️ **IMPORTANT START COMMAND NOTE**:  
 > Render dynamically assigns a web port using the `$PORT` environment variable. Ensure your **Start Command** is exact:  
@@ -179,7 +183,11 @@ Render enables **Auto-Deploy** by default for GitHub repositories:
 
 ## Troubleshooting Common Issues
 
-### ❌ Issue 1: Build Failed (`Failed to install requirements`)
+### ❌ Issue 1: `Could not open requirements file: No such file or directory`
+- **Cause**: Render is looking in the repository root folder, but your `requirements.txt` is located inside the `SSE-Learning-Bot` subfolder.
+- **Solution**: Go to your Render Web Service -> **Settings** -> Scroll to **Root Directory** -> Enter `SSE-Learning-Bot` -> Click **Save Changes**. Render will automatically trigger a new deployment.
+
+### ❌ Issue 2: Build Failed (`Failed to install requirements`)
 - **Cause**: Outdated pip or incompatible package version.
 - **Solution**: Ensure your **Build Command** is set to:
   `pip install --upgrade pip && pip install -r requirements.txt`
