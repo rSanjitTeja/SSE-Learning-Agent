@@ -42,7 +42,30 @@ class StartSessionRequest(BaseModel):
     mode: str  # "teach" or "doubt"
 
 
+class TopicSearchRequest(BaseModel):
+    topic: str
+    model: Optional[str] = "nemotron"
+
+
 from datetime import datetime
+from backend.services.topic_search_service import synthesize_topic_content
+
+
+@router.post("/api/topic/search-and-synthesize")
+async def search_and_synthesize_topic(req: TopicSearchRequest):
+    """Gather web search context via Tavily and synthesize study material using OpenRouter LLM."""
+    topic = (req.topic or "").strip()
+    if not topic:
+        raise HTTPException(status_code=400, detail="Topic search term cannot be empty.")
+
+    try:
+        result = await synthesize_topic_content(topic=topic, model_choice=req.model or "nemotron")
+        return result
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Topic synthesis failed: {str(e)}")
+
 
 
 @router.post("/api/session/start")

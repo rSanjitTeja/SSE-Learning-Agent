@@ -17,6 +17,7 @@ An interactive, 1-on-1 AI-powered classroom tutor that reads study materials (PD
 8. [Step 7: Start the Application](#step-7-start-the-application)
 9. [How to Use the Learning Room](#how-to-use-the-learning-room)
 10. [Troubleshooting & Common Questions](#troubleshooting--faqs)
+11. [🌐 Deploy to Cloud on Render (GitHub Guide)](RENDER_DEPLOYMENT_GUIDE.md)
 
 ---
 

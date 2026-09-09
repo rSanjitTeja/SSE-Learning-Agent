@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="/static/assets/sse-logo.svg">
-  <link rel="stylesheet" href="/static/css/style.css?v=8.0.0">
+  <link rel="stylesheet" href="/static/css/style.css?v=9.0.0">
 </head>
 <body class="setup-body">
 
@@ -51,44 +51,117 @@
 
   <main class="setup-main">
 
-    <!-- Upload Card -->
+    <!-- Upload & Topic Search Card -->
     <section class="setup-card" id="uploadCard">
       <div class="setup-card-header">
         <div class="step-badge">1</div>
         <div>
-          <h2 class="setup-card-title">Upload Your Study Material</h2>
-          <p class="setup-card-sub">Upload a PDF, DOCX, or TXT document — or paste text directly.</p>
+          <h2 class="setup-card-title">Choose How to Load Study Material</h2>
+          <p class="setup-card-sub">Search any topic to gather intelligent web content (via Tavily &amp; OpenRouter), or upload/paste notes.</p>
         </div>
       </div>
 
-      <!-- Drag & Drop Zone -->
-      <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload file area">
-        <div class="drop-zone-icon" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8"/></svg>
+      <!-- Mode Switcher Tabs -->
+      <div class="input-tabs">
+        <button type="button" class="tab-btn active" id="tabSearch" onclick="switchInputTab('search')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Search Topic (AI &amp; Web Gather)
+        </button>
+        <button type="button" class="tab-btn" id="tabUpload" onclick="switchInputTab('upload')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="2"/></svg>
+          Upload Document / Paste Notes
+        </button>
+      </div>
+
+      <!-- Tab 1: AI Topic Search & Synthesis -->
+      <div id="panelSearch" class="tab-panel">
+        <div class="topic-search-card">
+          <div class="search-field-wrapper">
+            <div class="search-icon-prefix" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round"/></svg>
+            </div>
+            <input type="text" id="searchTopicInput" class="search-input" placeholder="Search any topic (e.g. Operating Systems, Thermodynamics, Circuit Design)...">
+          </div>
+
+
+          <div class="model-selection-area">
+            <label class="model-section-label">Select OpenRouter AI Model:</label>
+            <div class="model-cards-grid">
+              <div class="model-card selected" data-model="nemotron" onclick="selectModelCard(this, 'nemotron')">
+                <div class="model-card-badge">⚡ Recommended</div>
+                <div class="model-card-title">NVIDIA Nemotron</div>
+                <div class="model-card-sub">70B Instruct (Free Router)</div>
+              </div>
+              <div class="model-card" data-model="gemma" onclick="selectModelCard(this, 'gemma')">
+                <div class="model-card-badge">🌐 Google AI</div>
+                <div class="model-card-title">Google Gemma 2</div>
+                <div class="model-card-sub">27B / 29B Instruct Model</div>
+              </div>
+              <div class="model-card" data-model="free_router" onclick="selectModelCard(this, 'free_router')">
+                <div class="model-card-badge">🔀 Smart Auto</div>
+                <div class="model-card-title">Free Router</div>
+                <div class="model-card-sub">OpenRouter Auto Selection</div>
+              </div>
+            </div>
+            <input type="hidden" id="selectedModelValue" value="nemotron">
+          </div>
+
+          <button type="button" class="btn-gather-topic" id="gatherTopicBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>Intelligently Gather &amp; Synthesize Topic</span>
+          </button>
+
+          <!-- Status / Progress Banner -->
+          <div class="topic-status-banner hidden" id="topicSearchStatus">
+            <div id="statusMessage" class="status-content">
+              <span class="status-spinner"></span>
+              <span>Searching live web context via Tavily API and synthesizing with OpenRouter...</span>
+            </div>
+            <div class="sources-list hidden" id="topicSources"></div>
+          </div>
         </div>
-        <p class="drop-zone-label">Drag &amp; drop your file here</p>
-        <p class="drop-zone-hint">PDF, DOCX, TXT, MD supported</p>
-        <button type="button" class="btn btn-outline" id="browseBtn">Browse file</button>
-        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
       </div>
 
-      <!-- File loaded chip -->
-      <div class="file-chip hidden" id="fileChip">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/></svg>
-        <span id="fileChipName">document.pdf</span>
-        <button type="button" class="file-chip-remove" id="removeFileBtn" aria-label="Remove file">✕</button>
+
+      <!-- Tab 2: Upload File / Paste Text -->
+      <div id="panelUpload" class="tab-panel hidden">
+        <!-- Drag & Drop Zone -->
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload file area">
+          <div class="drop-zone-icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
+          <p class="drop-zone-label">Drag &amp; drop your file here</p>
+          <p class="drop-zone-hint">PDF, DOCX, TXT, MD supported</p>
+          <button type="button" class="btn btn-outline" id="browseBtn">Browse file</button>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+        </div>
+
+        <!-- File loaded chip -->
+        <div class="file-chip hidden" id="fileChip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/></svg>
+          <span id="fileChipName">document.pdf</span>
+          <button type="button" class="file-chip-remove" id="removeFileBtn" aria-label="Remove file">✕</button>
+        </div>
+
+        <div class="divider-or"><span>or paste text</span></div>
       </div>
 
-      <div class="divider-or"><span>or paste text</span></div>
-
-      <textarea id="docText" class="doc-textarea" rows="6" placeholder="Paste your notes, article, or topic content here..."></textarea>
+      <!-- Synthesized / Extracted Study Material Preview -->
+      <div style="margin-top:20px;">
+        <label for="docText" class="field-label" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Study Material Content</span>
+          <span style="font-size:0.78rem;font-weight:400;color:var(--text-muted)">Auto-generated or pasted text</span>
+        </label>
+        <textarea id="docText" class="doc-textarea" rows="7" placeholder="Your study material content will appear here after searching a topic or uploading/pasting notes..."></textarea>
+      </div>
 
       <!-- Topic name -->
-      <div class="topic-field">
+      <div class="topic-field" style="margin-top:16px;">
         <label for="topicName" class="field-label">Topic / Chapter Name</label>
         <input type="text" id="topicName" class="field-input" placeholder="e.g. Binary Search Trees, Operating Systems — Memory Management">
       </div>
     </section>
+
 
     <!-- Mode Selection Card -->
     <section class="setup-card" id="modeCard">
@@ -204,9 +277,122 @@
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
+    // ── Input Tab Switching ───────────────────────────────────────────────────
+    function switchInputTab(tab) {
+      const tabSearch = document.getElementById('tabSearch');
+      const tabUpload = document.getElementById('tabUpload');
+      const panelSearch = document.getElementById('panelSearch');
+      const panelUpload = document.getElementById('panelUpload');
+
+      if (tab === 'search') {
+        tabSearch.classList.add('active');
+        tabUpload.classList.remove('active');
+        panelSearch.classList.remove('hidden');
+        panelUpload.classList.add('hidden');
+      } else {
+        tabUpload.classList.add('active');
+        tabSearch.classList.remove('active');
+        panelUpload.classList.remove('hidden');
+        panelSearch.classList.add('hidden');
+      }
+    }
+
+    // ── Model Card Selector ──────────────────────────────────────────────────
+    function selectModelCard(cardEl, modelVal) {
+      document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+      document.getElementById('selectedModelValue').value = modelVal;
+    }
+
+    // ── Topic Search & Synthesis (Tavily & OpenRouter) ────────────────────────
+    const gatherTopicBtn = document.getElementById('gatherTopicBtn');
+    const searchTopicInput = document.getElementById('searchTopicInput');
+    const topicSearchStatus = document.getElementById('topicSearchStatus');
+    const statusMessage = document.getElementById('statusMessage');
+    const topicSources = document.getElementById('topicSources');
+
+    async function handleTopicGather() {
+      const topic = searchTopicInput.value.trim();
+      if (!topic) {
+        showError('Please enter a topic to search (e.g. Quantum Computing).');
+        searchTopicInput.focus();
+        return;
+      }
+
+      const selectedModel = document.getElementById('selectedModelValue').value || 'nemotron';
+      gatherTopicBtn.disabled = true;
+      gatherTopicBtn.innerHTML = `
+        <span class="status-spinner" style="width:18px;height:18px;border-color:rgba(255,255,255,0.3);border-top-color:#fff;"></span>
+        <span>Gathering &amp; Synthesizing Content...</span>
+      `;
+
+      topicSearchStatus.classList.remove('hidden');
+      statusMessage.innerHTML = `
+        <span class="status-spinner"></span>
+        <span>Searching live web context via <b>Tavily API</b> and synthesizing with <b>OpenRouter (${escapeHtml(selectedModel)})</b>...</span>
+      `;
+      topicSources.classList.add('hidden');
+      topicSources.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/topic/search-and-synthesize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic: topic, model: selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.detail || 'Failed to synthesize topic material.');
+        }
+
+        // Auto fill topic name and docText
+        document.getElementById('topicName').value = data.topic_name;
+        document.getElementById('docText').value = data.synthesized_text;
+
+        // Render sources if available
+        statusMessage.innerHTML = `
+          <span style="color:#059669;font-weight:600;">✓ Topic content successfully generated using ${escapeHtml(data.model_used || selectedModel)}!</span>
+        `;
+
+        if (data.sources && data.sources.length) {
+          topicSources.innerHTML = `
+            <span style="font-weight:600;font-size:0.78rem;margin-right:4px;color:var(--text-secondary)">Web Sources:</span>
+            ${data.sources.map(s => `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="source-chip">🔗 ${escapeHtml(s.title || 'Source')}</a>`).join('')}
+          `;
+          topicSources.classList.remove('hidden');
+        }
+
+        // Smooth scroll to Study Material Preview
+        document.getElementById('docText').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      } catch (err) {
+        statusMessage.innerHTML = `<span style="color:#dc2626;font-weight:600;">❌ ${escapeHtml(err.message)}</span>`;
+      } finally {
+        gatherTopicBtn.disabled = false;
+        gatherTopicBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Intelligently Gather &amp; Synthesize Topic</span>
+        `;
+      }
+    }
+
+    if (gatherTopicBtn) {
+      gatherTopicBtn.addEventListener('click', handleTopicGather);
+    }
+    if (searchTopicInput) {
+      searchTopicInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleTopicGather();
+        }
+      });
+    }
+
+
     // ── State ─────────────────────────────────────────────────────────────────
     let selectedMode = 'teach';
     let extractedText = '';
+
 
     // ── Mode selection ────────────────────────────────────────────────────────
     document.querySelectorAll('.mode-card').forEach(card => {
