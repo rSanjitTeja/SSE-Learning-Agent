@@ -85,7 +85,7 @@ Every response you produce MUST be split into two distinct blocks:
 
 def _get_gemini_key() -> str:
     """Return Google Gemini API key if present and valid."""
-    key = os.getenv("GEMINI_API_KEY", "") or os.getenv("GOOGLE_API_KEY", "") or getattr(settings, "gemini_api_key", "")
+    key = getattr(settings, "gemini_api_key", "") or os.getenv("GEMINI_API_KEY", "") or os.getenv("GOOGLE_API_KEY", "")
     key = key.strip().strip('"').strip("'")
     if key and not key.startswith("sk-litellm") and len(key) >= 20:
         return key

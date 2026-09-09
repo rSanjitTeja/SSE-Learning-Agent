@@ -11,7 +11,7 @@ MODEL_MAP = {
     "gemma": "google/gemma-2-27b-it:free",
     "gemma-27b": "google/gemma-2-27b-it:free",
     "gemma-29b": "google/gemma-2-27b-it:free",
-    "nemotron": "meta-llama/llama-3.1-8b-instruct:free",
+    "nemotron": "nvidia/llama-3.1-nemotron-70b-instruct:free",
     "free_router": "openrouter/auto",
     "auto": "openrouter/auto",
 }
@@ -20,13 +20,13 @@ MODEL_MAP = {
 
 def _get_openrouter_key() -> str:
     """Retrieve OpenRouter API key from settings or environment."""
-    key = os.getenv("OPENROUTER_API_KEY", "") or getattr(settings, "openrouter_api_key", "")
+    key = getattr(settings, "openrouter_api_key", "") or os.getenv("OPENROUTER_API_KEY", "")
     return key.strip().strip('"').strip("'")
 
 
 def _get_tavily_key() -> str:
     """Retrieve Tavily API key from settings or environment."""
-    key = os.getenv("TAVILY_API_KEY", "") or getattr(settings, "tavily_api_key", "")
+    key = getattr(settings, "tavily_api_key", "") or os.getenv("TAVILY_API_KEY", "")
     return key.strip().strip('"').strip("'")
 
 
